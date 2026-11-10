@@ -1,0 +1,332 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pulse - Social & Voice Hub</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: 'var(--color-brand-50, #f0f9ff)',
+              100: 'var(--color-brand-100, #e0f2fe)',
+              500: 'var(--color-brand-500, #0284c7)',
+              600: 'var(--color-brand-600, #0284c7)',
+              700: 'var(--color-brand-700, #0369a1)',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --color-brand-primary: #6366f1;
+      --color-brand-hover: #4f46e5;
+    }
+    .custom-accent {
+      background-color: var(--color-brand-primary) !important;
+    }
+    .custom-accent-text {
+      color: var(--color-brand-primary) !important;
+    }
+    .custom-accent-border {
+      border-color: var(--color-brand-primary) !important;
+    }
+    /* Waveform visualizer simulation animation */
+    @keyframes barPulse {
+      0%, 100% { height: 6px; }
+      50% { height: 28px; }
+    }
+    .anim-bar {
+      animation: barPulse 0.8s infinite ease-in-out;
+    }
+    .anim-bar:nth-child(2) { animation-delay: 0.1s; }
+    .anim-bar:nth-child(3) { animation-delay: 0.2s; }
+    .anim-bar:nth-child(4) { animation-delay: 0.3s; }
+    .anim-bar:nth-child(5) { animation-delay: 0.4s; }
+    .anim-bar:nth-child(6) { animation-delay: 0.25s; }
+    .anim-bar:nth-child(7) { animation-delay: 0.15s; }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-200">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 transition-colors">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <!-- App Brand / Logo -->
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('feed')">
+        <div class="w-10 h-10 rounded-xl custom-accent flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-500/30">
+          <i class="fa-solid font-bold fa-compact-disc animate-spin-slow"></i>
+        </div>
+        <span class="font-extrabold text-xl tracking-tight bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
+          VibeVerse
+        </span>
+      </div>
+
+      <!-- Quick Nav Tabs (Desktop) -->
+      <nav class="hidden md:flex items-center space-x-1">
+        <button onclick="switchTab('feed')" id="nav-feed" class="px-4 py-2 rounded-xl text-sm font-semibold transition flex items-center space-x-2 custom-accent text-white">
+          <i class="fa-solid fa-house"></i>
+          <span>Feed</span>
+        </button>
+        <button onclick="switchTab('profile')" id="nav-profile" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center space-x-2">
+          <i class="fa-solid fa-user"></i>
+          <span>My Profile</span>
+        </button>
+        <button onclick="switchTab('settings')" id="nav-settings" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center space-x-2">
+          <i class="fa-solid fa-sliders"></i>
+          <span>Customizer</span>
+        </button>
+      </nav>
+
+      <!-- User Action Controls -->
+      <div class="flex items-center space-x-3">
+        <!-- Dark / Light Toggle -->
+        <button onclick="toggleDarkMode()" title="Toggle Theme Mode" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600 transition">
+          <i id="theme-toggle-icon" class="fa-solid fa-moon"></i>
+        </button>
+
+        <!-- Current User Avatar Header Badge -->
+        <div onclick="switchTab('profile')" class="flex items-center space-x-2 cursor-pointer p-1 rounded-full hover:ring-2 ring-indigo-500 transition">
+          <img id="header-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Avatar" class="w-9 h-9 rounded-full object-cover border border-slate-300 dark:border-slate-600">
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container Layout -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 flex flex-col md:flex-row gap-6">
+
+    <!-- Left Sidebar Profile Card & Quick Info -->
+    <aside class="w-full md:w-1/3 lg:w-1/4 flex flex-col gap-5">
+      <!-- Profile Summary Box -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden transition-all">
+        <!-- Cover Photo Banner -->
+        <div id="sidebar-banner" class="h-24 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 relative"></div>
+        <div class="px-5 pb-5 pt-0 relative">
+          <!-- User Profile Avatar -->
+          <div class="relative -mt-10 mb-3 inline-block">
+            <img id="sidebar-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Avatar" class="w-20 h-20 rounded-2xl object-cover border-4 border-white dark:border-slate-800 shadow-md">
+            <button onclick="switchTab('profile')" class="absolute bottom-0 right-0 bg-white dark:bg-slate-700 text-xs p-1.5 rounded-full shadow border border-slate-200 dark:border-slate-600 hover:scale-110 transition">
+              <i class="fa-solid fa-pen text-slate-600 dark:text-slate-300"></i>
+            </button>
+          </div>
+          <h2 id="sidebar-name" class="font-bold text-lg leading-snug">Alex Rivera</h2>
+          <p id="sidebar-username" class="text-xs font-medium text-slate-400 mb-3">@alex_vibes</p>
+          <p id="sidebar-bio" class="text-sm text-slate-600 dark:text-slate-300 line-clamp-3 mb-4">
+            🎤 Music Producer & Vocalist | Sharing live acoustic snippets & studio voice vibes daily! 🎵
+          </p>
+
+          <!-- Quick Stats -->
+          <div class="grid grid-cols-3 text-center py-2.5 border-t border-b border-slate-100 dark:border-slate-700/60 my-2 text-xs">
+            <div>
+              <span id="stat-posts" class="block font-bold text-slate-800 dark:text-white text-sm">0</span>
+              <span class="text-slate-400">Posts</span>
+            </div>
+            <div>
+              <span class="block font-bold text-slate-800 dark:text-white text-sm">1.4k</span>
+              <span class="text-slate-400">Followers</span>
+            </div>
+            <div>
+              <span class="block font-bold text-slate-800 dark:text-white text-sm">490</span>
+              <span class="text-slate-400">Following</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Action Navigation Card -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-200 dark:border-slate-700 space-y-1">
+        <button onclick="switchTab('feed')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-left text-sm font-semibold hover:bg-slate-100 dark:hover:bg-slate-700/50 transition">
+          <i class="fa-solid fa-fire text-indigo-500 w-5"></i>
+          <span>Trending Posts</span>
+        </button>
+        <button onclick="switchTab('profile')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-left text-sm font-semibold hover:bg-slate-100 dark:hover:bg-slate-700/50 transition">
+          <i class="fa-solid fa-sliders text-purple-500 w-5"></i>
+          <span>Customize Profile</span>
+        </button>
+        <button onclick="switchTab('settings')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-left text-sm font-semibold hover:bg-slate-100 dark:hover:bg-slate-700/50 transition">
+          <i class="fa-solid fa-palette text-pink-500 w-5"></i>
+          <span>Theme & Colors</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Central Interactive View Area -->
+    <section class="flex-1 min-w-0">
+      
+      <!-- TAB 1: MAIN FEED TAB -->
+      <div id="tab-feed" class="space-y-6">
+        
+        <!-- Post Creator Box -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-200 dark:border-slate-700 transition">
+          <div class="flex items-start space-x-3">
+            <img id="creator-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Avatar" class="w-10 h-10 rounded-full object-cover">
+            <div class="flex-1">
+              <textarea id="post-text-input" rows="3" placeholder="What's on your mind? Share an update or sing a vocal note..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100 resize-none transition"></textarea>
+              
+              <!-- Image Preview Box -->
+              <div id="image-preview-container" class="hidden relative mt-2 rounded-xl overflow-hidden max-h-60 bg-slate-900">
+                <img id="image-preview" src="" alt="Post Attachment Preview" class="w-full h-auto object-cover">
+                <button onclick="removeAttachedImage()" class="absolute top-2 right-2 bg-slate-900/80 text-white rounded-full p-1.5 hover:bg-slate-900 transition">
+                  <i class="fa-solid fa-xmark text-xs w-4 h-4 flex items-center justify-center"></i>
+                </button>
+              </div>
+
+              <!-- Voice Audio Recording Widget Box -->
+              <div id="voice-recorder-widget" class="hidden mt-3 p-3 bg-indigo-50 dark:bg-indigo-950/40 rounded-xl border border-indigo-200 dark:border-indigo-800/50">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-3">
+                    <button id="record-btn" onclick="toggleAudioRecording()" class="w-10 h-10 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow transition animate-pulse">
+                      <i id="record-btn-icon" class="fa-solid fa-microphone"></i>
+                    </button>
+                    <div>
+                      <p id="record-status-text" class="text-xs font-bold text-slate-700 dark:text-indigo-200">Ready to Record</p>
+                      <p id="record-timer" class="text-xs text-slate-500 font-mono">00:00</p>
+                    </div>
+                  </div>
+
+                  <!-- Dynamic Equalizer Animation -->
+                  <div id="visualizer-bars" class="hidden flex items-end space-x-1 h-6 px-2">
+                    <div class="w-1 bg-indigo-500 rounded-full anim-bar"></div>
+                    <div class="w-1 bg-indigo-500 rounded-full anim-bar"></div>
+                    <div class="w-1 bg-indigo-500 rounded-full anim-bar"></div>
+                    <div class="w-1 bg-indigo-500 rounded-full anim-bar"></div>
+                    <div class="w-1 bg-indigo-500 rounded-full anim-bar"></div>
+                    <div class="w-1 bg-indigo-500 rounded-full anim-bar"></div>
+                  </div>
+
+                  <!-- Delete recorded audio button -->
+                  <button onclick="discardRecordedAudio()" class="text-slate-400 hover:text-red-500 text-xs px-2 py-1">
+                    <i class="fa-solid fa-trash"></i> Discard
+                  </button>
+                </div>
+
+                <!-- Recorded Audio Playback element -->
+                <audio id="audio-playback" controls class="hidden w-full mt-3 h-8"></audio>
+              </div>
+
+              <!-- Media Attachment Toolbar & Post Button -->
+              <div class="flex items-center justify-between mt-3 pt-2 border-t border-slate-100 dark:border-slate-700/60">
+                <div class="flex items-center space-x-1">
+                  <!-- File input for Images -->
+                  <label title="Attach Image" class="p-2 text-slate-500 dark:text-slate-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-slate-700 rounded-lg cursor-pointer transition">
+                    <i class="fa-solid fa-image text-lg"></i>
+                    <input type="file" id="image-upload-input" accept="image/*" class="hidden" onchange="handleImageSelected(event)">
+                  </label>
+
+                  <!-- Button to open Singing / Voice Note Box -->
+                  <button type="button" onclick="toggleVoiceRecorderBox()" title="Record Singing or Voice Note" class="p-2 text-slate-500 dark:text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-slate-700 rounded-lg transition flex items-center space-x-1">
+                    <i class="fa-solid fa-microphone text-lg"></i>
+                    <span class="text-xs font-semibold hidden sm:inline">Sing / Voice</span>
+                  </button>
+                </div>
+
+                <!-- Submit Button -->
+                <button onclick="createNewPost()" class="custom-accent text-white font-semibold text-sm px-5 py-2 rounded-xl hover:opacity-90 transition shadow-sm">
+                  Publish Post
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline Feed Title Filter -->
+        <div class="flex items-center justify-between px-1">
+          <h3 class="font-bold text-slate-700 dark:text-slate-200 text-base">Community Activity</h3>
+          <span class="text-xs text-slate-400" id="post-count-label">0 posts</span>
+        </div>
+
+        <!-- Dynamic Post List Container -->
+        <div id="posts-container" class="space-y-4">
+          <!-- Posts rendered dynamically via JavaScript -->
+        </div>
+
+      </div>
+
+      <!-- TAB 2: EDIT PROFILE & DYNAMIC CUSTOMIZER -->
+      <div id="tab-profile" class="hidden space-y-6">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+          <h2 class="text-xl font-bold mb-1">Edit Profile Settings</h2>
+          <p class="text-xs text-slate-400 mb-6">Customize your personal identity, display name, handle, and avatar.</p>
+
+          <form onsubmit="saveProfileChanges(event)" class="space-y-5">
+            
+            <!-- Avatar Picker -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Profile Avatar URL</label>
+              <div class="flex items-center space-x-4">
+                <img id="edit-preview-avatar" src="" alt="Avatar Preview" class="w-16 h-16 rounded-2xl object-cover border-2 border-slate-200 dark:border-slate-700">
+                <div class="flex-1">
+                  <input type="text" id="edit-avatar-url" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Paste image URL..." oninput="updateAvatarPreview(this.value)">
+                  <p class="text-[11px] text-slate-400 mt-1">Or choose preset: 
+                    <button type="button" onclick="setPresetAvatar('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80')" class="text-indigo-500 underline ml-1">Singer</button> | 
+                    <button type="button" onclick="setPresetAvatar('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80')" class="text-indigo-500 underline">Producer</button> |
+                    <button type="button" onclick="setPresetAvatar('https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80')" class="text-indigo-500 underline">Artist</button>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Display Name -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Display Name</label>
+              <input type="text" id="edit-display-name" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 outline-none" required>
+            </div>
+
+            <!-- Username Handle -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Username Handle</label>
+              <div class="relative">
+                <span class="absolute left-3.5 top-2.5 text-slate-400 text-sm">@</span>
+                <input type="text" id="edit-username-handle" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl pl-8 pr-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 outline-none" required>
+              </div>
+            </div>
+
+            <!-- Profile Bio -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Profile Bio</label>
+              <textarea id="edit-bio" rows="3" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"></textarea>
+            </div>
+
+            <div class="pt-3 border-t border-slate-100 dark:border-slate-700 flex justify-end">
+              <button type="submit" class="custom-accent text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition">
+                Save Profile Changes
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- TAB 3: APP THEME & ACCENT CUSTOMIZER -->
+      <div id="tab-settings" class="hidden space-y-6">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+          <h2 class="text-xl font-bold mb-1">Visual Customizer ("Change Everything")</h2>
+          <p class="text-xs text-slate-400 mb-6">Modify header highlights, profile card background gradients, and primary UI color accents.</p>
+
+          <div class="space-y-6">
+            <!-- Accent Color Selection -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Primary Accent Color</label>
+              <div class="grid grid-cols-4 sm:grid-cols-6 gap-3">
+                <button onclick="setThemeAccent('#6366f1')" class="h-10 rounded-xl bg-indigo-500 border-2 border-white dark:border-slate-700 shadow flex items-center justify-center text-white hover:scale-105 transition"><i class="fa-solid fa-check"></i></button>
+                <button onclick="setThemeAccent('#ec4899')" class="h-10 rounded-xl bg-pink-500 border-2 border-white dark:border-slate-700 shadow flex items-center justify-center text-white hover:scale-105 transition"></button>
+                <button onclick="setThemeAccent('#10b981')" class="h-10 rounded-xl bg-emerald-500 border-2 border-white dark:border-slate-700 shadow flex items-center justify-center text-white hover:scale-105 transition"></button>
+                <button onclick="setThemeAccent('#f59e0b')" class="h-10 rounded-xl bg-amber-500 border-2 border-white dark:border-slate-700
